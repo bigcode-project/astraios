@@ -256,6 +256,7 @@ accelerate launch main.py \
 --generation_only \
 --save_generations \
 --trust_remote_code \
+--prompt octocoder \
 --save_generations_path generations_asleep_completion_astraios-1b-lora.json \
 --metric_output_path evaluation_asleep_completion_astraios-1b-lora.json \
 --max_length_generation 1024
