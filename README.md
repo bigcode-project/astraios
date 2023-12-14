@@ -9,8 +9,6 @@ This repository provides an overview of all components from the paper [Astraios:
 - [Overview](#overview)
 - [PEFT](#peft)
 - [Evaluation](#evaluation)
-  - [Run](#run)
-  - [Creation](#creation)
 - [Training](#training)
 - [Outputs](#outputs)
 - [Visuals](#visuals)
@@ -88,8 +86,6 @@ Notes:
 - For any configuration issues, please refer to the original [PEFT](https://github.com/huggingface/peft).
 
 ## Evaluation
-
-### Run
 
 1. **Setup:** Run the below bash code to setup the evaluation repository.
 
