@@ -35,7 +35,7 @@ for MODEL in "${MODELS[@]}"; do
 
         CMD="$BASE_CMD \
         --model bigcode/$MODEL_NAME \
-        --peft_model starpeft/$MODEL_NAME-$METHOD \
+        --peft_model bigcode/${MODEL_NAME/starcoderbase/astraios}-$METHOD \
         --save_generations_path $GEN_FILE \
         --metric_output_path ${EVAL_PATH}-${MODEL}-$METHOD.json"
 
@@ -46,15 +46,15 @@ for MODEL in "${MODELS[@]}"; do
     
     GEN_FILE="${GENERATIONS_PATH}-${MODEL}-fft.json"
 
-    # For 15b model, the name is "starcoderbase" not "starcoderbase-$MODEL"
+    # For 15b model, the name is "astraios" not "astraios-$MODEL"
     if [ "$MODEL" == "15b" ]; then
-        FFT_MODEL_NAME="starcoderbase-fft"
+        FFT_MODEL_NAME="astraios-fft"
     else
-        FFT_MODEL_NAME="starcoderbase-$MODEL-fft"
+        FFT_MODEL_NAME="astraios-$MODEL-fft"
     fi
 
     CMD="$BASE_CMD \
-    --model starpeft/$FFT_MODEL_NAME \
+    --model bigcode/$FFT_MODEL_NAME \
     --save_generations_path $GEN_FILE \
     --metric_output_path ${EVAL_PATH}-${MODEL}-fft.json"
 

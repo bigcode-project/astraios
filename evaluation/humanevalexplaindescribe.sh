@@ -23,8 +23,8 @@ for lang in "${LANGS[@]}"; do
     GENERATIONS_PATH="./generations-humanevalexplaindescribe-$lang-starcoderbase"
     EVAL_PATH="./evaluation-humanevalexplaindescribe-$lang-starcoderbase"
 
-    PEFT_METHODS=("lora")
-    MODELS=("1b")
+    PEFT_METHODS=("lora" "ptuning" "ia3" "adapterp" "adapterh" "parallel")
+    MODELS=("1b" "3b" "7b" "15b")
 
     for MODEL in "${MODELS[@]}"; do
         for METHOD in "${PEFT_METHODS[@]}"; do
@@ -45,12 +45,12 @@ for lang in "${LANGS[@]}"; do
 
             CMD="$BASE_CMD \
             --model bigcode/$MODEL_NAME \
-            --peft_model starpeft/$MODEL_NAME-$METHOD \
+            --peft_model bigcode/${MODEL_NAME/starcoderbase/astraios}-$METHOD \
             --save_generations_path $GEN_FILE \
             --metric_output_path ${EVAL_PATH}-${MODEL}-$METHOD.json"
 
             # Execute the command
-            sh -c "$CMD"
+            echo -c "$CMD"
             echo "-----------------------------------------"
         done
 
@@ -62,15 +62,15 @@ for lang in "${LANGS[@]}"; do
             continue
         fi
 
-        # For 15b model, the name is "starcoderbase" not "starcoderbase-$MODEL"
+        # For 15b model, the name is "astraios" not "astraios-$MODEL"
         if [ "$MODEL" == "15b" ]; then
-            FFT_MODEL_NAME="starcoderbase-fft"
+            FFT_MODEL_NAME="astraios-fft"
         else
-            FFT_MODEL_NAME="starcoderbase-$MODEL-fft"
+            FFT_MODEL_NAME="astraios-$MODEL-fft"
         fi
 
         CMD="$BASE_CMD \
-        --model starpeft/$FFT_MODEL_NAME \
+        --model bigcode/$FFT_MODEL_NAME \
         --save_generations_path $GEN_FILE \
         --metric_output_path ${EVAL_PATH}-${MODEL}-fft.json"
 
