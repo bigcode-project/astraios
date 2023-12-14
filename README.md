@@ -22,7 +22,7 @@ This repository provides an overview of all components from the paper [Astraios:
 <table>
 <tr>
 <th>Data</t> 
-<td><a href=https://huggingface.co/datasets/bigcode/commitpackft>CommitPackFT+OASST</a></td>
+<td><a href=https://huggingface.co/datasets/bigcode/guanaco-commits>CommitPackFT+OASST</a></td>
 <td>Filtered version of CommitPack and OASST for high-quality commit messages that resemble instructions</td>
 </tr>
 <tr>
