@@ -275,7 +275,7 @@ accelerate launch main.py \
 --save_generations_path generations_clone_detection_astraios-1b-fft.json \
 --max_length_generation 512
 ```
-- The evaluation notebook for Clone Detection and Defection is stored in [evaluation/eval_codexglue.ipnb](evaluation/eval_codexglue.ipynb).
+- The evaluation notebook for Clone Detection and Defection is stored in [evaluation/eval_code_comprehension.ipynb](evaluation/eval_code_comprehension.ipynb).
 
 ## Training
 
