@@ -302,16 +302,16 @@ Note:
 
 ## Outputs
 
-Outputs are put under their corresponding subfolders in [outputs folder](outputs/).
+Outputs are under their corresponding subfolders in [outputs folder](outputs/).
 
 Note:
-- Some outputs may be missing as they were not saved at the beginning.
+- Some outputs may be missing as they were not saved initially.
 
 ## Visuals
 
 Figures:
 
-- All figures are created via [this colab notebook/](https://colab.research.google.com/drive/1EVClM38KBpdZkL7ELYCrPkS2YmObM3SV?usp=sharing).
+- All figures are created via [this colab notebook](https://colab.research.google.com/drive/1EVClM38KBpdZkL7ELYCrPkS2YmObM3SV?usp=sharing).
 
 - The figure of Astraios is generated via [DALL-E](https://openai.com/dall-e-3) with the prompt of `A fantasy-inspired, adorable illustration of Astraios, the Greek god of dusk. The setting is a serene evening landscape with a gradient sky transition`.
 
@@ -319,13 +319,13 @@ Figures:
 
 Everything is licensed as permissively as possible to us. 
 
-The evaluation repository `Code Generation LM Evaluation Harness` are licensed under the [Apache-2.0 license](https://github.com/bigcode-project/bigcode-evaluation-harness/blob/main/LICENSE).
+The evaluation repository `Code Generation LM Evaluation Harness` is licensed under the [Apache-2.0 license](https://github.com/bigcode-project/bigcode-evaluation-harness/blob/main/LICENSE).
 
 [PEFT library](https://github.com/huggingface/peft) is licensed under [Apache-2.0 license](https://github.com/bigcode-project/bigcode-evaluation-harness/blob/main/LICENSE).
 
 All Astraios models are licensed under the [same license as StarCoder](https://huggingface.co/spaces/bigcode/bigcode-model-license-agreement) (Commercial except for use cases deemed harmful).
 
-The remaining code originally created in this repository are licensed under the MIT License.
+The remaining code originally created in this repository is licensed under the MIT License.
 
 ## Todo List
 
