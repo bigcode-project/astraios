@@ -1,6 +1,8 @@
 # Astraios: Parameter-Efficient Instruction Tuning Code Large Language Models
 
-![](visuals/banner.png)
+<p align="center" width="100%">
+<a ><img src="visuals/banner.png" alt="Astraios" style="width: 20%; min-width: 300px; display: block; margin: auto;"></a>
+</p>
 
 This repository provides an overview of all components from the paper [Astraios: Parameter-Efficient Instruction Tuning Code Large Language Models]().
 
