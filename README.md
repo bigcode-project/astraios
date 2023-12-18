@@ -79,7 +79,7 @@ This repository provides an overview of all components from the paper [Astraios:
 **Setup:** Run the below bash code to setup the PEFT methods used in our work. We additionally implement `AdapterH`, `AdapterP` and `Parallel` methods based on the `peft==0.6.0.dev0`. For more information, please refer to the [peft folder](peft/).
 
 ```bash
-pip install -e peft/
+pip install git+https://github.com/bigcode-project/astraios#subdirectory=peft
 ```
 
 Notes:
