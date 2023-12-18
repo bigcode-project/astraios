@@ -76,7 +76,7 @@ This repository provides an overview of all components from the paper [Astraios:
 
 ## PEFT
 
-**Setup:** Run the below bash code to setup the PEFT methods used in our work. We additionally implement `AdapterH`, `AdapterP` and `Parallel` methods based on the `peft==0.6.0.dev0`. For more information, please refer to the [peft folder](peft/).
+**Setup:** Run the bash code below to set up the PEFT methods used in our work. We additionally implement `AdapterH`, `AdapterP` and `Parallel` methods based on the `peft==0.6.0.dev0`. For more information, please refer to the [peft folder](peft/).
 
 ```bash
 pip install git+https://github.com/bigcode-project/astraios#subdirectory=peft
@@ -89,7 +89,7 @@ Notes:
 
 ## Evaluation
 
-1. **Setup:** Run the below bash code to setup the evaluation repository.
+1. **Setup:** Run the bash code below to set up the evaluation repository.
 
 ```bash
 git clone -b astraios https://github.com/bigcode-project/bigcode-evaluation-harness
@@ -100,7 +100,7 @@ accelerate config
 
 2. **Run:** All evaluation scripts are in [evaluation folder](evaluation/). Run each script via bash.
 
-We use `astraios-1b-lora` as an example and use the bash code to run following tasks:
+We use `astraios-1b-lora` as an example and use the bash code to run the following tasks:
 
 - Clone Detection
 ```bash
