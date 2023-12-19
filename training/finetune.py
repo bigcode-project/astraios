@@ -6,22 +6,31 @@ import random
 import warnings
 from accelerate import Accelerator
 from datasets import load_dataset
-from peft import get_peft_model, prepare_model_for_int8_training, set_peft_model_state_dict, get_peft_model_state_dict
+from peft import prepare_model_for_int8_training
 from torch.utils.data import IterableDataset
 from tqdm import tqdm
-from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer, Trainer, TrainingArguments, logging, set_seed
-from transformers import TrainerCallback, TrainingArguments, TrainerState, TrainerControl
-from transformers.trainer_utils import PREFIX_CHECKPOINT_DIR
-
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    Trainer,
+    TrainingArguments,
+    logging,
+    set_seed,
+)
+from transformers import TrainingArguments
 from peft_config import get_peft
+
 """
 Fine-Tune StarCoder on an instruction dataset
 """
 
+
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_path", type=str, default="bigcode/starcoder")
-    parser.add_argument("--dataset_name", type=str, default="HuggingFaceH4/CodeAlpaca_20K")
+    parser.add_argument(
+        "--dataset_name", type=str, default="HuggingFaceH4/CodeAlpaca_20K"
+    )
     parser.add_argument("--subset", type=str)
     parser.add_argument("--split", type=str)
     parser.add_argument("--size_valid_set", type=int, default=10000)
@@ -31,7 +40,7 @@ def get_args():
 
     parser.add_argument("--input_column_name", type=str, default="prompt")
     parser.add_argument("--output_column_name", type=str)
-    parser.add_argument("--targets_only", action="store_true") # default value of False
+    parser.add_argument("--targets_only", action="store_true")  # default value of False
 
     parser.add_argument("--seq_length", type=int, default=2048)
     parser.add_argument("--max_steps", type=int, default=100)
@@ -49,7 +58,9 @@ def get_args():
     parser.add_argument("--local_rank", type=int, default=0)
     parser.add_argument("--fp16", action="store_True")
     parser.add_argument("--bf16", action="store_true", default=False)
-    parser.add_argument("--no_gradient_checkpointing", action="store_false", default=True)
+    parser.add_argument(
+        "--no_gradient_checkpointing", action="store_false", default=True
+    )
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--num_workers", type=int, default=None)
     parser.add_argument("--output_dir", type=str, default="./checkpoints")
@@ -60,7 +71,9 @@ def get_args():
     return parser.parse_args()
 
 
-def chars_token_ratio(dataset, tokenizer, input_column_name, output_column_name, nb_examples=400):
+def chars_token_ratio(
+    dataset, tokenizer, input_column_name, output_column_name, nb_examples=400
+):
     """
     Estimate the average number of characters per token in the dataset.
     """
@@ -86,14 +99,16 @@ def print_trainable_parameters(model):
         all_param += param.numel()
         if param.requires_grad:
             trainable_params += param.numel()
-    print(f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}")
+    print(
+        f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}"
+    )
 
 
 def prepare_sample_text(example, input_column_name, output_column_name):
     """Prepare the text from a sample of the dataset."""
-    if output_column_name :
+    if output_column_name:
         text = f"Question: {example[input_column_name]}\n\nAnswer: {example[output_column_name]}"
-    else :
+    else:
         text = example[input_column_name]
     return text
 
@@ -120,10 +135,14 @@ class ConstantLengthDataset(IterableDataset):
         seq_length=1024,
         num_of_sequences=1024,
         chars_per_token=3.6,
-        shuffle=True
+        shuffle=True,
     ):
         self.tokenizer = tokenizer
-        self.concat_token_id = tokenizer.eos_token_id if tokenizer.eos_token_id is not None else args.eos_token_id
+        self.concat_token_id = (
+            tokenizer.eos_token_id
+            if tokenizer.eos_token_id is not None
+            else args.eos_token_id
+        )
         self.dataset = dataset
         self.seq_length = seq_length
         self.infinite = infinite
@@ -142,7 +161,13 @@ class ConstantLengthDataset(IterableDataset):
                 if buffer_len >= self.max_buffer_size:
                     break
                 try:
-                    buffer.append(prepare_sample_text(next(iterator), self.input_column_name, self.output_column_name))
+                    buffer.append(
+                        prepare_sample_text(
+                            next(iterator),
+                            self.input_column_name,
+                            self.output_column_name,
+                        )
+                    )
                     buffer_len += len(buffer[-1])
                 except StopIteration:
                     if self.infinite:
@@ -159,27 +184,29 @@ class ConstantLengthDataset(IterableDataset):
                 input_ids = all_token_ids[i : i + self.seq_length]
                 if len(input_ids) == self.seq_length:
                     examples.append(input_ids)
-            if self.shuffle :
+            if self.shuffle:
                 random.shuffle(examples)
-            for example in examples :
+            for example in examples:
                 self.current_size += 1
                 yield {
                     "input_ids": torch.LongTensor(example),
                     "labels": torch.LongTensor(example),
                 }
 
+
 class TLConstantLengthDataset(ConstantLengthDataset):
     """
     Target Loss ConstantLengthDataset
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-    
+
     def __iter__(self):
         iterator = iter(self.dataset)
         more_examples = True
         left = "Question: "
-        middle = "\n\n"+"Answer: "
+        middle = "\n\n" + "Answer: "
         while more_examples:
             buffer_list, buffer_len = [], 0
             while True:
@@ -190,7 +217,7 @@ class TLConstantLengthDataset(ConstantLengthDataset):
                     q_str = example[self.input_column_name]
                     a_str = example[self.output_column_name]
                     buffer_list.append((q_str, a_str))
-                    buffer_len += len(left+q_str+middle+a_str)
+                    buffer_len += len(left + q_str + middle + a_str)
                 except StopIteration:
                     if self.infinite:
                         iterator = iter(self.dataset)
@@ -199,15 +226,21 @@ class TLConstantLengthDataset(ConstantLengthDataset):
                         break
             all_token_ids = []
             all_label_ids = []
-            for q_str, a_str in buffer_list :
-                question_token_ids = self.tokenizer(left+q_str+middle)["input_ids"]
+            for q_str, a_str in buffer_list:
+                question_token_ids = self.tokenizer(left + q_str + middle)["input_ids"]
                 answer_token_ids = self.tokenizer(a_str)["input_ids"]
-                all_token_ids.extend(question_token_ids + answer_token_ids + [self.concat_token_id])
-                all_label_ids.extend([-100] * len(question_token_ids) + answer_token_ids + [self.concat_token_id])
+                all_token_ids.extend(
+                    question_token_ids + answer_token_ids + [self.concat_token_id]
+                )
+                all_label_ids.extend(
+                    [-100] * len(question_token_ids)
+                    + answer_token_ids
+                    + [self.concat_token_id]
+                )
 
-            # sanity check 
+            # sanity check
             assert len(all_token_ids) == len(all_label_ids)
-            
+
             input_examples = []
             output_examples = []
             for i in range(0, len(all_token_ids), self.seq_length):
@@ -216,14 +249,17 @@ class TLConstantLengthDataset(ConstantLengthDataset):
                 if len(input_ids) == self.seq_length:
                     input_examples.append(input_ids)
                     output_examples.append(label_ids)
-            
-            if self.shuffle :
+
+            if self.shuffle:
                 examples = list(zip(input_examples, output_examples))
                 random.shuffle(examples)
                 input_examples, output_examples = zip(*examples)
-                input_examples, output_examples = list(input_examples), list(output_examples)
-            
-            for input_ids, label_ids in zip(input_examples, output_examples) :
+                input_examples, output_examples = (
+                    list(input_examples),
+                    list(output_examples),
+                )
+
+            for input_ids, label_ids in zip(input_examples, output_examples):
                 self.current_size += 1
                 yield {
                     "input_ids": torch.LongTensor(input_ids),
@@ -239,7 +275,7 @@ def create_datasets(tokenizer, args):
         use_auth_token=True,
         num_proc=args.num_workers if not args.streaming else None,
         streaming=args.streaming,
-        cache_dir="tmp/"
+        cache_dir="tmp/",
     )
     if args.streaming:
         print("Loading the dataset in streaming mode")
@@ -249,15 +285,21 @@ def create_datasets(tokenizer, args):
     else:
         train_data = dataset["train"]
         valid_data = dataset["test"]
-        print(f"Size of the train set: {len(train_data)}. Size of the validation set: {len(valid_data)}")
+        print(
+            f"Size of the train set: {len(train_data)}. Size of the validation set: {len(valid_data)}"
+        )
 
-    if not args.output_column_name :
-        warnings.warn("You did not provide a output column name. If you're not going to work on 2 columns, ignore this warning.")
+    if not args.output_column_name:
+        warnings.warn(
+            "You did not provide a output column name. If you're not going to work on 2 columns, ignore this warning."
+        )
 
-    chars_per_token = chars_token_ratio(train_data, tokenizer, args.input_column_name, args.output_column_name)
+    chars_per_token = chars_token_ratio(
+        train_data, tokenizer, args.input_column_name, args.output_column_name
+    )
     print(f"The character to token ratio of the dataset is: {chars_per_token:.2f}")
 
-    if args.targets_only :
+    if args.targets_only:
         train_dataset = TLConstantLengthDataset(
             tokenizer,
             train_data,
@@ -278,7 +320,7 @@ def create_datasets(tokenizer, args):
             output_column_name=args.output_column_name,
             num_of_sequences=args.num_of_sequences,
         )
-    else :
+    else:
         train_dataset = ConstantLengthDataset(
             tokenizer,
             train_data,
@@ -323,7 +365,7 @@ def run_training(args, train_data, val_data):
         model = prepare_model_for_int8_training(model)
 
     model = get_peft(model, args.peft_type)
-    
+
     print_trainable_parameters(model)
     with open("para_stats.txt", "a+") as f:
         f.write(args.model_path + " " + args.peft_type + "\n")
@@ -357,10 +399,10 @@ def run_training(args, train_data, val_data):
     )
 
     trainer = Trainer(
-        model=model, 
-        args=training_args, 
-        train_dataset=train_data, 
-        eval_dataset=val_data, 
+        model=model,
+        args=training_args,
+        train_dataset=train_data,
+        eval_dataset=val_data,
     )
 
     print("Training...")
