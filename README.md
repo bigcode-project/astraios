@@ -149,25 +149,6 @@ accelerate launch main.py \
 --max_length_generation 2048
 ```
 
-- HumanEvalSynthesize-Python
-```bash
-accelerate launch main.py \
---model bigcode/starcoderbase-1b  \
---peft_model bigcode/astraios-1b-lora \
---tasks humanevalsynthesize-python \
---do_sample True \
---temperature 0.2 \
---n_samples 20 \
---batch_size 5 \
---allow_code_execution \
---save_generations \
---trust_remote_code \
---prompt octocoder \
---save_generations_path generations_humanevalsynthesize-python_astraios-1b-lora.json \
---metric_output_path evaluation_humanevalsynthesize-python_astraios-1b-lora.json \
---max_length_generation 2048
-```
-
 - HumanEvalFix-Python
 ```bash
 accelerate launch main.py \
