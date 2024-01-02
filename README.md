@@ -320,5 +320,10 @@ The remaining code originally created in this repository is licensed under the M
 ## Citation
 
 ```bibtex
-
+@article{zhuo2024astraios,
+      title={Astraios: Parameter-Efficient Instruction Tuning Code Large Language Models}, 
+      author={Terry Yue Zhuo and Armel Zebaze and Nitchakarn Suppattarachai and Leandro von Werra and Harm de Vries and Qian Liu and Niklas Muennighoff},
+      journal={https://arxiv.org/abs/2401.00788},
+      year={2024}
+}
 ```
