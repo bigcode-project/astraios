@@ -314,7 +314,6 @@ The remaining code originally created in this repository is licensed under the M
 
 - [ ] Organize the file names in `outputs/` folder. 
 - [ ] Organize the bash script in `evaluation/` folder.
-- [ ] Add bibtex for citation.
 - [ ] Merge the PR to `bigcode-evaluation-harness`.
 
 ## Citation
