@@ -6,7 +6,7 @@ for model in "${models[@]}"
 do
     for peft in "${peft_types[@]}"
     do
-        echo finetune.py \
+        python finetune.py \
             --model_path="bigcode/starcoderbase$model" \
             --dataset_name="bigcode/guanaco-commits" \
             --input_column_name prompt \
