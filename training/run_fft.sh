@@ -3,7 +3,7 @@ models=("-1b" "-3b" "-7b" "")
 
 for model in "${models[@]}"
 do
-    echo finetune.py \
+    python finetune.py \
         --model_path="bigcode/starcoderbase$model" \
         --dataset_name="bigcode/guanaco-commits" \
         --input_column_name prompt \
