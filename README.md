@@ -4,7 +4,7 @@
 <a ><img src="visuals/banner.png" alt="Astraios" style="width: 20%; min-width: 300px; display: block; margin: auto;"></a>
 </p>
 
-This repository provides an overview of all components from the paper [Astraios: Parameter-Efficient Instruction Tuning Code Large Language Models](arxiv.org/abs/2401.00788).
+This repository provides an overview of all components from the paper [Astraios: Parameter-Efficient Instruction Tuning Code Large Language Models](https://arxiv.org/abs/2401.00788).
 
 <!-- TOC -->
 
