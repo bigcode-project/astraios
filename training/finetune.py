@@ -56,7 +56,7 @@ def get_args():
     parser.add_argument("--weight_decay", type=float, default=0.05)
 
     parser.add_argument("--local_rank", type=int, default=0)
-    parser.add_argument("--fp16", action="store_True")
+    parser.add_argument("--fp16", action="store_true")
     parser.add_argument("--bf16", action="store_true", default=False)
     parser.add_argument(
         "--no_gradient_checkpointing", action="store_false", default=True
@@ -99,10 +99,7 @@ def print_trainable_parameters(model):
         all_param += param.numel()
         if param.requires_grad:
             trainable_params += param.numel()
-    print(
-        f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}"
-    )
-
+    return f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}"
 
 def prepare_sample_text(example, input_column_name, output_column_name):
     """Prepare the text from a sample of the dataset."""
@@ -366,7 +363,6 @@ def run_training(args, train_data, val_data):
 
     model = get_peft(model, args.peft_type)
 
-    print_trainable_parameters(model)
     with open("para_stats.txt", "a+") as f:
         f.write(args.model_path + " " + args.peft_type + "\n")
         f.write(print_trainable_parameters(model) + "\n\n")
